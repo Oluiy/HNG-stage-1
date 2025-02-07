@@ -1,45 +1,56 @@
-export function isPrime(n: number): boolean {
-  if (n < 2) return false;
-  for (let i = 2; i <= Math.sqrt(n); i++) {
-    if (n % i === 0) return false;
+
+import axios from "axios";
+
+//to verify if the num is a prime number or not
+const prime = (num: number): boolean => {
+  if (num < 2 || num % 2 === 0) {
+    return false;
   }
+
+  for (let i = 3; i < Math.sqrt(num); i++)
+    if (num % i === 0) {
+      return false;
+    }
   return true;
-}
+};
 
-
-export function isPerfect(n: number): boolean {
-  if (n < 0) return false; // Negative numbers cannot be perfect squares
-  const sqrt = Math.sqrt(n);
-  return Number.isInteger(sqrt);
-}
-
-
-export function isArmstrong(n: number): boolean {
-  if (n < 0) return false;
-  const digits = n.toString();
-  const power = digits.length;
-  let sum = 0;
-  for (const digit of digits) {
-    sum += Math.pow(parseInt(digit, 10), power);
+//to verify if the parsed-in number is a perfect number.
+function isPerfect(n: number): boolean {
+    if (n < 0) return false; // Negative numbers cannot be perfect squares
+    const sqrt = Math.sqrt(n);
+    return Number.isInteger(sqrt);
   }
-  return sum === n;
-}
+  
 
 
-export function classifyProperties(n: number): string[] {
-  const props: string[] = [];
-  if (isArmstrong(n)) {
-    props.push("armstrong");
+// //to verify if the parsed-in number is an Armstrong number.
+function isArmstrong(num: number): boolean {
+      const digits = num.toString().split('');
+      const numDigits = digits.length;
+      const sum = digits.reduce((acc, digit) => acc + Math.pow(Number(digit), numDigits), 0);
+      const armstrong = sum === num;
+      return armstrong;
   }
-  props.push(n % 2 === 0 ? "even" : "odd");
-  return props;
-}
 
 
-export function digitSum(n: number): number {
-  return n
+//to calculate the sum of the digits of the parsed-in number.
+const digitSum = (num: number): number => {
+  const decDigit = num
     .toString()
-    .replace('-', '')
-    .split('')
-    .reduce((acc, digit) => acc + parseInt(digit, 10), 0);
-}
+    .split("")
+    .reduce((sum, digit) => sum + parseInt(digit), 0);
+  return decDigit;
+};
+
+//it fetches a random fact about the parsed-in number from the Numbers API.
+const humorousFact = async (num: number): Promise<string> => {
+  try {
+    const reply = await axios.get(`http://numbersapi.com/${num}`);
+    return reply.data;
+  } catch (error) {
+    return "No fun fact yet";
+  }
+};
+
+export { prime, isPerfect, isArmstrong, digitSum, humorousFact };
+

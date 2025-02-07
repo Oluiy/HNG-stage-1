@@ -1,65 +1,53 @@
-
-import axios from "axios";
-
-//to verify if the num is a prime number or not
-const prime = (num: number): boolean => {
-  if (num < 2 || num % 2 === 0) {
-    return false;
-  }
-
-  for (let i = 3; i < Math.sqrt(num); i++)
-    if (num % i === 0) {
+export function getNumber(n: number): number {
+  return n;
+}
+export function isPrime(n: number): boolean {
+  if (n < 2) return false;
+  for (let i = 2; i <= Math.floor(Math.sqrt(n)); i++) {
+    if (n % i === 0) {
       return false;
     }
+  }
   return true;
-};
+}
 
-//to verify if the parsed-in number is a perfect number.
-const isPerfect = (num: number): boolean => {
-  if (num < 2) {
-    return false;
+export function isPerfect(n: number): boolean {
+  if (n < 0) return false;
+  const sqrt = Math.sqrt(n);
+  return Number.isInteger(sqrt);
+}
+
+
+export function isArmstrong(n: number): string {
+  if (n < 0) return "";
+  const str = n.toString();
+  const len = str.length;
+  let sum = 0;
+  for (const char of str) {
+    sum += Math.pow(parseInt(char, 10), len);
   }
+  return sum === n ? "Armstrong number" : "";
+}
 
-  let sum = 1;
-  const squareRt = Math.sqrt(num);
 
-  for (let i = 2; i <= squareRt; i++) {
-    if (num % i === 0) {
-      sum += i + (i !== num / i ? num / i : 0);
-    }
+export function isEvenOrOdd(n: number): string {
+  return n % 2 === 0 ? "Even" : "Odd";
+}
+
+
+export function properties(n: number): string[] {
+  const armstrongResult = isArmstrong(n);
+  if (armstrongResult === "Armstrong number") {
+    return [armstrongResult, isEvenOrOdd(n)];
   }
-  let result = sum === num;
-  return result;
-};
+  return [isEvenOrOdd(n)];
+}
 
-
-// //to verify if the parsed-in number is an Armstrong number.
-function isArmstrong(num: number): boolean {
-      const digits = num.toString().split('');
-      const numDigits = digits.length;
-      const sum = digits.reduce((acc, digit) => acc + Math.pow(Number(digit), numDigits), 0);
-      const armstrong = sum === num;
-      return armstrong;
+export function digitSum(n: number): number {
+  let sum = 0;
+  const str = Math.abs(n).toString();
+  for (const char of str) {
+    sum += parseInt(char, 10);
   }
-
-
-//to calculate the sum of the digits of the parsed-in number.
-const digitSum = (num: number): number => {
-  const decDigit = num
-    .toString()
-    .split("")
-    .reduce((sum, digit) => sum + parseInt(digit), 0);
-  return decDigit;
-};
-
-//it fetches a random fact about the parsed-in number from the Numbers API.
-const humorousFact = async (num: number): Promise<string> => {
-  try {
-    const reply = await axios.get(`http://numbersapi.com/${num}`);
-    return reply.data;
-  } catch (error) {
-    return "No fun fact yet";
-  }
-};
-
-export { prime, isPerfect, isArmstrong, digitSum, humorousFact };
+  return sum;
+}

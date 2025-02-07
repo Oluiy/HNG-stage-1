@@ -1,64 +1,68 @@
-import express, { Application, Request, Response } from "express";
-import cors from "cors";
-import { prime, humorousFact, isPerfect, isArmstrong, digitSum } from "./lib";
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import {
+  getNumber,
+  isPrime,
+  isPerfect,
+  properties,
+  digitSum
+} from './lib';
 
-const app: Application = express();
-const PORT: number = parseInt(process.env.PORT || "3000", 10);
+const app = express();
 
 app.use(cors());
 
-//Creating an Interface for the response
-interface Responsedata {
-    number: number;
-    is_prime: boolean;
-    is_perfect: boolean;
-    properties: string[];
-    digit_sum: number;
-    fun_fact: string;
+
+async function getFunFact(n: number): Promise<string> {
+  const url = `http://numbersapi.com/${n}/math`;
+  try {
+    const response = await axios.get(url);
+    if (response.status === 200) {
+      return response.data;
+    }
+    return "No fun fact available";
+  } catch (error) {
+    return "No fun fact available";
+  }
 }
 
-interface errr {
-    number: string;
-    error: boolean;
-}
 
-interface Query {
-    number: string;
-}
+app.get('/api/classify-number', async (req: Request, res: Response): Promise<void> => {
+  const numberParam = req.query.number;
 
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server is running on port http://localhost:${PORT}/api/classify-number`);
+  if (!numberParam || typeof numberParam !== 'string') {
+    res.status(400).json({ error: true, message: "Please provide a number" });
+    return;
+  }
+
+  let n: number;
+  try {
+    n = parseInt(numberParam, 10);
+    if (isNaN(n)) {
+      throw new Error("Invalid number");
+    }
+  } catch (err) {
+    res.json({
+      number: numberParam,
+      error: true
+    });
+    return;
+  }
+
+  const funFact = await getFunFact(n);
+
+  res.status(200).json({
+    number: getNumber(n),
+    is_prime: isPrime(n),
+    is_perfect: isPerfect(n),
+    properties: properties(n),
+    digit_sum: digitSum(n),
+    fun_fact: funFact
+  });
 });
 
-app.get("/api/classify-number", async (req: Request, reply: Response) => {
-    const num = parseInt(req.query.number as string, 10);
-    if (isNaN(num)) {
-        reply.status(400).json({ number: "<your_number>", error: "Invalid input" });
-        return;
-    }
-
-    const properties: string[] = [];
-    //check if the number is odd
-    if (num % 2 !== 0) {
-        properties.push("odd");
-    }
-    //check if the number is even
-    if (num % 2 === 0) {
-        properties.push("even");
-    }
-    //check if the number is an armstrong number
-    if (isArmstrong(num)) {
-        properties.push("armstrong");
-    }
-
-    const response: Responsedata = {
-        number: num,
-        is_prime: prime(num),
-        is_perfect: isPerfect(num),
-        properties,
-        digit_sum: digitSum(num),
-        fun_fact: await humorousFact(num),
-    };
-
-    reply.status(200).json(response);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port http://localhost:${port}`);
 });

@@ -1,53 +1,54 @@
-export function getNumber(n: number): number {
-  return n;
-}
 export function isPrime(n: number): boolean {
   if (n < 2) return false;
-  for (let i = 2; i <= Math.floor(Math.sqrt(n)); i++) {
-    if (n % i === 0) {
-      return false;
-    }
+  for (let i = 2; i <= Math.sqrt(n); i++) {
+    if (n % i === 0) return false;
   }
   return true;
 }
 
+
 export function isPerfect(n: number): boolean {
+  if (n <= 1) return false;
+  let sum = 1;
+  for (let i = 2; i <= Math.sqrt(n); i++) {
+    if (n % i === 0) {
+      sum += i;
+      const complement = n / i;
+      if (complement !== i) {
+        sum += complement;
+      }
+    }
+  }
+  return sum === n;
+}
+
+
+export function isArmstrong(n: number): boolean {
   if (n < 0) return false;
-  const sqrt = Math.sqrt(n);
-  return Number.isInteger(sqrt);
-}
-
-
-export function isArmstrong(n: number): string {
-  if (n < 0) return "";
-  const str = n.toString();
-  const len = str.length;
+  const digits = n.toString();
+  const power = digits.length;
   let sum = 0;
-  for (const char of str) {
-    sum += Math.pow(parseInt(char, 10), len);
+  for (const digit of digits) {
+    sum += Math.pow(parseInt(digit, 10), power);
   }
-  return sum === n ? "armstrong number" : "";
+  return sum === n;
 }
 
 
-export function isEvenOrOdd(n: number): string {
-  return n % 2 === 0 ? "even" : "odd";
-}
-
-
-export function properties(n: number): string[] {
-  const armstrongResult = isArmstrong(n);
-  if (armstrongResult === "armstrong number") {
-    return [armstrongResult, isEvenOrOdd(n)];
+export function classifyProperties(n: number): string[] {
+  const props: string[] = [];
+  if (isArmstrong(n)) {
+    props.push("armstrong");
   }
-  return [isEvenOrOdd(n)];
+  props.push(n % 2 === 0 ? "even" : "odd");
+  return props;
 }
+
 
 export function digitSum(n: number): number {
-  let sum = 0;
-  const str = Math.abs(n).toString();
-  for (const char of str) {
-    sum += parseInt(char, 10);
-  }
-  return sum;
+  return n
+    .toString()
+    .replace('-', '')
+    .split('')
+    .reduce((acc, digit) => acc + parseInt(digit, 10), 0);
 }

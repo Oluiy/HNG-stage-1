@@ -7,65 +7,59 @@ const PORT: number = parseInt(process.env.PORT || "3000", 10);
 
 app.use(cors());
 
-//Creating an Interface for the response
-interface Responsedata {
-    number: number;
-    is_prime: boolean;
-    is_perfect: boolean;
-    properties: string[];
-    digit_sum: number;
-    fun_fact: string;
+
+interface ResponseData {
+  number: number;
+  is_prime: boolean;
+  is_perfect: boolean;
+  properties: string[];
+  digit_sum: number;
+  fun_fact: string;
 }
 
-interface errr {
-    number: string;
-    error: boolean;
+interface ErrorResponse {
+  number: string;
+  error: boolean;
 }
 
-interface Query {
-    number: string;
-}
+app.get("/api/classify-number", async (req: Request, res: Response) => {
+  const numberStr = req.query.number as string;
 
 
-app.get("/api/classify-number", async (req: Request, reply: Response) => {
-    const num = parseInt(req.query.number as string, 10);
-    if (isNaN(num)) {
-        reply.status(400).json({ number: "alphabet", error: true });
-        return;
-    }
+  if (!numberStr || isNaN(parseInt(numberStr, 10))) {
+    res.status(400).json({ number: "alphabet", error: true } as ErrorResponse);
+    return;
+  }
+  const num = parseInt(numberStr, 10);
 
-    const properties: string[] = [];
-    //check if the number is odd
-    if (num % 2 !== 0) {
-        properties.push("odd");
-    }
-    //check if the number is even
-    if (num % 2 === 0) {
-        properties.push("even");
-    }
-    //check if the number is an armstrong number
-    if (isArmstrong(num)) {
-        properties.push("armstrong");
-    }
 
-    const response: Responsedata = {
-        number: num,
-        is_prime: prime(num),
-        is_perfect: isPerfect(num),
-        properties,
-        digit_sum: digitSum(num),
-        fun_fact: await humorousFact(num),
-    };
+  const properties: string[] = [];
+  if (isArmstrong(num)) {
+    properties.push("armstrong");
+  }
+  if (num % 2 === 0) {
+    properties.push("even");
+  } else {
+    properties.push("odd");
+  }
 
-    reply.status(200).json(response);
+  const response: ResponseData = {
+    number: num,
+    is_prime: prime(num),
+    is_perfect: isPerfect(num),
+    properties,
+    digit_sum: digitSum(num),
+    fun_fact: await humorousFact(num),
+  };
+
+  res.status(200).json(response);
 });
 
 
-app.use((req: Request, reply: Response): void =>{
-  reply.status(404).json({detail: "Not Found"});
-})
+app.use((req: Request, res: Response): void => {
+  res.status(404).json({ detail: "Not Found" });
+});
 
 app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
+  console.log(`Server is running on port http://localhost:${PORT}`);
 });
-

@@ -1,56 +1,49 @@
-
 import axios from "axios";
 
-//to verify if the num is a prime number or not
 const prime = (num: number): boolean => {
-  if (num < 2 || num % 2 === 0) {
-    return false;
+  if (num < 2) return false;
+  if (num === 2) return true;
+  if (num % 2 === 0) return false;
+  for (let i = 3; i <= Math.sqrt(num); i += 2) {
+    if (num % i === 0) return false;
   }
-
-  for (let i = 3; i < Math.sqrt(num); i++)
-    if (num % i === 0) {
-      return false;
-    }
   return true;
 };
 
-//to verify if the parsed-in number is a perfect number.
+ 
 function isPerfect(n: number): boolean {
-    if (n < 0) return false; // Negative numbers cannot be perfect squares
-    const sqrt = Math.sqrt(n);
-    return Number.isInteger(sqrt);
-  }
-  
+  if (n < 0) return false; 
+  const sqrt = Math.sqrt(n);
+  return Number.isInteger(sqrt);
+}
 
 
-// //to verify if the parsed-in number is an Armstrong number.
 function isArmstrong(num: number): boolean {
-      const digits = num.toString().split('');
-      const numDigits = digits.length;
-      const sum = digits.reduce((acc, digit) => acc + Math.pow(Number(digit), numDigits), 0);
-      const armstrong = sum === num;
-      return armstrong;
-  }
+  if (num < 0) return false;
+  const digits = num.toString().split('');
+  const numDigits = digits.length;
+  const sum = digits.reduce((acc, digit) => acc + Math.pow(Number(digit), numDigits), 0);
+  return sum === num;
+}
 
 
-//to calculate the sum of the digits of the parsed-in number.
 const digitSum = (num: number): number => {
-  const decDigit = num
+  return Math.abs(num)
     .toString()
     .split("")
-    .reduce((sum, digit) => sum + parseInt(digit), 0);
-  return decDigit;
+    .reduce((sum, digit) => sum + parseInt(digit, 10), 0);
 };
 
-//it fetches a random fact about the parsed-in number from the Numbers API.
 const humorousFact = async (num: number): Promise<string> => {
   try {
-    const reply = await axios.get(`http://numbersapi.com/${num}`);
-    return reply.data;
+    const response = await axios.get(`http://numbersapi.com/${num}/math?json`);
+    if (response.status === 200 && response.data && response.data.text) {
+      return response.data.text;
+    }
+    return "No fun fact yet";
   } catch (error) {
     return "No fun fact yet";
   }
 };
 
 export { prime, isPerfect, isArmstrong, digitSum, humorousFact };
-

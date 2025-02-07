@@ -8,18 +8,9 @@ export function isPrime(n: number): boolean {
 
 
 export function isPerfect(n: number): boolean {
-  if (n <= 1) return false;
-  let sum = 1;
-  for (let i = 2; i <= Math.sqrt(n); i++) {
-    if (n % i === 0) {
-      sum += i;
-      const complement = n / i;
-      if (complement !== i) {
-        sum += complement;
-      }
-    }
-  }
-  return sum === n;
+  if (n < 0) return false; // Negative numbers cannot be perfect squares
+  const sqrt = Math.sqrt(n);
+  return Number.isInteger(sqrt);
 }
 
 

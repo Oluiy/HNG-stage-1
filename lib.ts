@@ -26,18 +26,18 @@ export function isArmstrong(n: number): string {
   for (const char of str) {
     sum += Math.pow(parseInt(char, 10), len);
   }
-  return sum === n ? "Armstrong number" : "";
+  return sum === n ? "armstrong number" : "";
 }
 
 
 export function isEvenOrOdd(n: number): string {
-  return n % 2 === 0 ? "Even" : "Odd";
+  return n % 2 === 0 ? "even" : "odd";
 }
 
 
 export function properties(n: number): string[] {
   const armstrongResult = isArmstrong(n);
-  if (armstrongResult === "Armstrong number") {
+  if (armstrongResult === "armstrong number") {
     return [armstrongResult, isEvenOrOdd(n)];
   }
   return [isEvenOrOdd(n)];

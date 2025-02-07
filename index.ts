@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import {
@@ -11,15 +11,16 @@ import {
 
 const app = express();
 
+
 app.use(cors());
 
 
 async function getFunFact(n: number): Promise<string> {
-  const url = `http://numbersapi.com/${n}/math`;
+  const url = `http://numbersapi.com/${n}/math?json`;
   try {
     const response = await axios.get(url);
     if (response.status === 200) {
-      return response.data;
+      return response.data.text;
     }
     return "No fun fact available";
   } catch (error) {
@@ -31,8 +32,8 @@ async function getFunFact(n: number): Promise<string> {
 app.get('/api/classify-number', async (req: Request, res: Response): Promise<void> => {
   const numberParam = req.query.number;
 
-  if (!numberParam || typeof numberParam !== 'string') {
-    res.status(400).json({ error: true, message: "Please provide a number" });
+  if (!numberParam || typeof numberParam !== 'string' || numberParam.trim() === '') {
+    res.status(400).json({ number: "alphabet", error: true });
     return;
   }
 
@@ -43,7 +44,7 @@ app.get('/api/classify-number', async (req: Request, res: Response): Promise<voi
       throw new Error("Invalid number");
     }
   } catch (err) {
-    res.json({
+    res.status(400).json({
       number: numberParam,
       error: true
     });
@@ -62,10 +63,10 @@ app.get('/api/classify-number', async (req: Request, res: Response): Promise<voi
   });
 });
 
-app.use((req: Request, res: Response): void => {
-    res.status(404).json({ detail: "Not Found" });
-  });
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(404).json({ detail: "Not Found" });
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

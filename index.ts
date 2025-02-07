@@ -62,6 +62,11 @@ app.get('/api/classify-number', async (req: Request, res: Response): Promise<voi
   });
 });
 
+app.use((req: Request, res: Response): void => {
+    res.status(404).json({ detail: "Not Found" });
+  });
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port http://localhost:${port}`);

@@ -17,6 +17,7 @@ interface ResponseData {
   fun_fact: string;
 }
 
+
 interface ErrorResponse {
   number: string;
   error: boolean;
@@ -25,23 +26,29 @@ interface ErrorResponse {
 app.get("/api/classify-number", async (req: Request, res: Response) => {
   const numberStr = req.query.number as string;
 
-
-  if (!numberStr || isNaN(parseInt(numberStr, 10))) {
+  if (!numberStr) {
     res.status(400).json({ number: "alphabet", error: true } as ErrorResponse);
     return;
   }
-  const num = parseInt(numberStr, 10);
+
+  const trimmedNumberStr = numberStr.trim();
+
+
+  if (!/^-?\d+$/.test(trimmedNumberStr)) {
+    res.status(400).json({ number: "alphabet", error: true } as ErrorResponse);
+    return;
+  }
+
+
+  const num = parseInt(trimmedNumberStr, 10);
+
 
 
   const properties: string[] = [];
   if (isArmstrong(num)) {
     properties.push("armstrong");
   }
-  if (num % 2 === 0) {
-    properties.push("even");
-  } else {
-    properties.push("odd");
-  }
+  properties.push(num % 2 === 0 ? "even" : "odd");
 
   const response: ResponseData = {
     number: num,
@@ -54,7 +61,6 @@ app.get("/api/classify-number", async (req: Request, res: Response) => {
 
   res.status(200).json(response);
 });
-
 
 app.use((req: Request, res: Response): void => {
   res.status(404).json({ detail: "Not Found" });

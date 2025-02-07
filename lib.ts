@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 const prime = (num: number): boolean => {
   if (num < 2) return false;
   if (num === 2) return true;
@@ -10,16 +11,18 @@ const prime = (num: number): boolean => {
   return true;
 };
 
- 
+
+
 function isPerfect(n: number): boolean {
-  if (n < 0) return false; 
+  if (n < 0) return false; // Negative numbers cannot be perfect squares.
   const sqrt = Math.sqrt(n);
   return Number.isInteger(sqrt);
 }
 
 
+
 function isArmstrong(num: number): boolean {
-  if (num < 0) return false;
+  if (num < 0) return false; // Armstrong numbers are defined for non-negative integers.
   const digits = num.toString().split('');
   const numDigits = digits.length;
   const sum = digits.reduce((acc, digit) => acc + Math.pow(Number(digit), numDigits), 0);
@@ -33,6 +36,7 @@ const digitSum = (num: number): number => {
     .split("")
     .reduce((sum, digit) => sum + parseInt(digit, 10), 0);
 };
+
 
 const humorousFact = async (num: number): Promise<string> => {
   try {

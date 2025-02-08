@@ -7,7 +7,6 @@ const PORT: number = parseInt(process.env.PORT || "3000", 10);
 
 app.use(cors());
 
-
 interface ResponseData {
   number: number;
   is_prime: boolean;
@@ -16,7 +15,6 @@ interface ResponseData {
   digit_sum: number;
   fun_fact: string;
 }
-
 
 interface ErrorResponse {
   number: string;
@@ -33,16 +31,12 @@ app.get("/api/classify-number", async (req: Request, res: Response) => {
 
   const trimmedNumberStr = numberStr.trim();
 
-
   if (!/^-?\d+$/.test(trimmedNumberStr)) {
     res.status(400).json({ number: "alphabet", error: true } as ErrorResponse);
     return;
   }
 
-
   const num = parseInt(trimmedNumberStr, 10);
-
-
 
   const properties: string[] = [];
   if (isArmstrong(num)) {
